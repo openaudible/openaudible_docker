@@ -39,7 +39,7 @@ docker build -t openaudible .
 docker run -d --rm -it -p 3000:3000 --name openaudible openaudible
 ```
 
-The [run.sh](run.sh) file builds and runs the docker image. 
+The [run.sh](run.sh) file builds and runs the docker image. You may want to modify it to expose the OPENAUDIBLE volume. 
 
 If successful, the application will be up and running on port 3000 and
 accessible via http://localhost:3000 in a browser.
@@ -60,10 +60,11 @@ The -rm flag removes the container when it quits. Any downloaded or converted bo
 ## Notes
 * This is experimental and unsupported. We hope some people find it useful. 
 * If you find any issues, please report them on [github.com/openaudible/openaudible_docker/issues](https://github.com/openaudible/openaudible_docker/issues).
-* 
 * Before deleting the container and volume, if you logged into Audible, you should Log out using the Control Menu, which will delete your virtual device.
+* Would appreciate feedback or pull requests. 
+* Docker is great for testing something, but we still recommend the desktop app for most users.
 
 ## License
-This repository is licensed under the GNU GPL 3.0 licence because that is what [docker-webtop](https://github.com/linuxserver/docker-webtop) uses.
+This repository is licensed under the GNU GPL 3.0 because that is what [docker-webtop](https://github.com/linuxserver/docker-webtop) uses.
 
-OpenAudible the desktop application is free to try shareware.
+The OpenAudible desktop application is free to try shareware.
