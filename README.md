@@ -53,7 +53,8 @@ The -rm flag removes the container when it quits. Any downloaded or converted bo
 * But it does allow a user to try the software in a containerized, accessible-from-anywhere way.
 
 ## TODO items
-* Perhaps experiment with Ubuntu Kiosk Mode, to disable terminal, su, etc?
+* Add a user/password for accessing the VM 
+* Perhaps experiment with Ubuntu Kiosk Mode, to disable terminal, su, etc? OpenAudible and system file browser.
 * lock down "su" root ability (change root password?)  
 * Document how to access the "config" volume so you can access any converted books from the host machine.
 
