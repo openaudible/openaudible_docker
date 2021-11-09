@@ -19,12 +19,9 @@ No passwords are needed to access the web page (so use care!). For personal use.
 view web sessions at one time-so this can't be used to share the application with multiple viewers at the same time.
 
 
-You may want to map the volume /root/openaudible to access downloaded and converted audiobooks.
-
 ## Quick Start
 
 ```
-mkdir -p $HOME/OpenAudible
 docker run -d --rm -it -v $HOME/OpenAudible:/config/OpenAudible -p 3000:3000 --name openaudible openaudible/openaudible:latest
 ```
 
@@ -38,7 +35,6 @@ Once OpenAudible has been started (by visiting the web site above), your books w
 git clone https://github.com/openaudible/openaudible_docker.git 
 cd openaudible_docker
 docker build -t openaudible .
-mkdir -p ~/OpenAudible
 docker run -d --rm -it -v $HOME/OpenAudible:/config/OpenAudible -p 3000:3000 --name openaudible openaudible
 ```
 
