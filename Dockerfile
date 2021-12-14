@@ -8,17 +8,18 @@ RUN apt-get update && \
     libgtk-3-bin ca-certificates wget libswt-webkit-gtk-4-jni vim xdg-utils
 RUN apt remove -y xfce4-panel firefox
 
+VOLUME /config/OpenAudible
+
 # Download latest installer for linux
 RUN wget https://openaudible.org/latest/OpenAudible_x86_64.sh -O OpenAudible.sh
 
 # Install without prompts
-RUN sh OpenAudible.sh -q -overwrite  && rm OpenAudible.sh
+RUN sh OpenAudible.sh -q -overwrite -dir /usr/local/OpenAudible && rm OpenAudible.sh
 
 
 # copy slightly modified startvm.sh to defaults to start OpenAudible
+# This gets executed when a web browser hits the http://localhost:3000 page
 COPY startwm.sh /defaults/startwm.sh
-
-# RUN ln -s /usr/local/OpenAudible/OpenAudible.desktop /defaults/Desktop/OpenAudible.desktop
 
 
 

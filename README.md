@@ -19,27 +19,26 @@ No passwords are needed to access the web page (so use care!). For personal use.
 view web sessions at one time-so this can't be used to share the application with multiple viewers at the same time.
 
 
-You may want to map the volume /root/openaudible to access downloaded and converted audiobooks.
-
 ## Quick Start
 
 ```
-docker run -d --rm -it -p 3000:3000 --name openaudible openaudible/openaudible:latest
+docker run -d --rm -it -v $HOME/OpenAudible:/config/OpenAudible -p 3000:3000 --name openaudible openaudible/openaudible:latest
 ```
 
 Then open your web browser to http://localhost:3000
 
-You'll probably want to access the volume where OpenAudible saves books.
+Once OpenAudible has been started (by visiting the web site above), your books will and setting files will be available in ~/OpenAudible
+
 
 ## Building and running from source
 ```
 git clone https://github.com/openaudible/openaudible_docker.git 
 cd openaudible_docker
 docker build -t openaudible .
-docker run -d --rm -it -p 3000:3000 --name openaudible openaudible
+docker run -d --rm -it -v $HOME/OpenAudible:/config/OpenAudible -p 3000:3000 --name openaudible openaudible
 ```
 
-The [run.sh](run.sh) file builds and runs the docker image. You may want to modify it to expose the OPENAUDIBLE volume. 
+The [run.sh](run.sh) file builds and runs the docker image. 
 
 If successful, the application will be up and running on port 3000 and
 accessible via http://localhost:3000 in a browser.
@@ -56,7 +55,6 @@ The -rm flag removes the container when it quits. Any downloaded or converted bo
 * Add a user/password for accessing the VM 
 * Perhaps experiment with Ubuntu Kiosk Mode, to disable terminal, su, etc? OpenAudible and system file browser.
 * lock down "su" root ability (change root password?)  
-* Document how to access the "config" volume so you can access any converted books from the host machine.
 
 ## Notes
 * This is experimental and unsupported. We hope some people find it useful. 
