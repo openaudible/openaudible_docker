@@ -19,6 +19,9 @@ docker build -t $NAME .
 echo "Starting $NAME docker container"
 docker run -d -it -v $OA_DIR:/config/OpenAudible -p 3000:3000 --name $NAME $NAME
 
+# or run without mapping the volume.... 
+# docker run -d -it -p 3000:3000 --name $NAME $NAME
+
 echo "OpenAudible container started... open a web browser to http://localhost:3000 "
 echo "Data file will be saved to $OA_DIR once the application has started for the first time"
 

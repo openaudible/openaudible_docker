@@ -13,12 +13,7 @@ RUN apt-get update && \
 RUN apt remove -y xfce4-panel firefox
 
 VOLUME /config/OpenAudible
-
-# Download latest installer for linux
-RUN wget https://openaudible.org/latest/OpenAudible_x86_64.sh -O OpenAudible.sh
-
-# Install without prompts
-RUN sh OpenAudible.sh -q -overwrite -dir /usr/local/OpenAudible && rm OpenAudible.sh
+COPY setup.sh /config/setup.sh
 
 
 # copy slightly modified startvm.sh to defaults to start OpenAudible
