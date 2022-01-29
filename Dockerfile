@@ -1,3 +1,7 @@
+# Dockerfile to run OpenAudible desktop application from a browser.
+# docker build -t openaudible .
+# docker run -d --rm -it -v $HOME/OpenAudible:/config/OpenAudible -p 3000:3000 --name openaudible openaudible
+
 FROM ghcr.io/linuxserver/webtop:ubuntu-xfce
 
 EXPOSE 3000
@@ -5,7 +9,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    libgtk-3-bin ca-certificates wget libswt-webkit-gtk-4-jni vim xdg-utils
+    libgtk-3-bin ca-certificates wget libswt-webkit-gtk-4-jni vim xdg-utils libnss3-dev
 RUN apt remove -y xfce4-panel firefox
 
 VOLUME /config/OpenAudible
