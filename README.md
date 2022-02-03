@@ -45,19 +45,31 @@ accessible via http://localhost:3000 in a browser.
 
 The -rm flag removes the container when it quits. Any downloaded or converted books will be in the docker Volume.
 
+## Getting latest version and upgrading
+This docker image starts by installing the latest version from a GUI terminal window (so you can see the progress.)
+When running, you might get a notification that a new version is available. 
+While upgrading by downloading and running the installer may work, it is probably easier to just exit the docker container, remove it, and pull it again.
+
+```
+docker stop openaudible
+docker rm openaudible
+```
+Then re-run the command(s) above to start it anew. Your settings should still be saved in the docker volume that should be mapped to a home directory.
 
 ## Known limitations:
 * Another user logging on to the web page disconnects anyone else already connected
-* No password protection is offered or https proxy-but can be added. 
+* No password protection is enabled by default. 
+* https not supported, but it will work using a reverse proxy like traefik or nginx.  
 * But it does allow a user to try the software in a containerized, accessible-from-anywhere way.
 
 ## TODO items
 * Add a user/password for accessing the VM 
 * Perhaps experiment with Ubuntu Kiosk Mode, to disable terminal, su, etc? OpenAudible and system file browser.
 * lock down "su" root ability (change root password?)  
+* Mapping uids from your local file system to the docker file system hasn't been addressed (so files downloaded from the container may have id's that don't match your own.)
 
 ## Notes
-* This is experimental and unsupported. We hope some people find it useful. 
+* This is experimental and unsupported. We hope some people find it useful. It is a neat way to run a desktop app in a container.  
 * If you find any issues, please report them on [github.com/openaudible/openaudible_docker/issues](https://github.com/openaudible/openaudible_docker/issues).
 * Before deleting the container and volume, if you logged into Audible, you should Log out using the Control Menu, which will delete your virtual device.
 * Would appreciate feedback or pull requests. 
