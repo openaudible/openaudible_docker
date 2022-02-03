@@ -11,13 +11,19 @@ docker rm $NAME
 # for this sample script, we set OA_DIR to your home directory/OpenAudible ... You can modify this by editing the OA_DIR variable.
 set -e
 
+# Use the following User IDs and Group IDs for the container
+PUID=`id -u`
+PGID=`id -g`
+
 
 OA_DIR=$HOME/OpenAudible
 echo "Saving book data to $OA_DIR"
 
+
 docker build -t $NAME .
 echo "Starting $NAME docker container"
-docker run -d -it -v $OA_DIR:/config/OpenAudible -p 3000:3000 --name $NAME $NAME
+docker run -d -it -v $OA_DIR:/config/OpenAudible -p 3000:3000 -e PUID=$PUID -e PGID=$PGID  --name $NAME $NAME
+
 
 # or run without mapping the volume.... 
 # docker run -d -it -p 3000:3000 --name $NAME $NAME

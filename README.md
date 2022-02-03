@@ -22,7 +22,7 @@ view web sessions at one time-so this can't be used to share the application wit
 ## Quick Start
 
 ```
-docker run -d --rm -it -v $HOME/OpenAudible:/config/OpenAudible -p 3000:3000 --name openaudible openaudible/openaudible:latest
+docker run -d --rm -it -v $HOME/OpenAudible:/config/OpenAudible -p 3000:3000 -e PGID=`id -g` -e PUID=`id -u` --name openaudible openaudible/openaudible:latest
 ```
 
 Then open your web browser to http://localhost:3000
@@ -34,16 +34,17 @@ Once OpenAudible has been started (by visiting the web site above), your books w
 ```
 git clone https://github.com/openaudible/openaudible_docker.git 
 cd openaudible_docker
-docker build -t openaudible .
-docker run -d --rm -it -v $HOME/OpenAudible:/config/OpenAudible -p 3000:3000 --name openaudible openaudible
+./run.sh
 ```
 
 The [run.sh](run.sh) file builds and runs the docker image. 
 
 If successful, the application will be up and running on port 3000 and
-accessible via http://localhost:3000 in a browser.
+accessible via [http://localhost:3000](http://localhost:3000) in a browser.
 
-The -rm flag removes the container when it quits. Any downloaded or converted books will be in the docker Volume.
+The optional -rm flag removes the container when it quits. Any downloaded or converted books will be in the docker Volume.
+
+The run.sh script sets the UID and GID (user and group) id's for file access so files generated use your user and group IDs.
 
 ## Getting latest version and upgrading
 This docker image starts by installing the latest version from a GUI terminal window (so you can see the progress.)
@@ -52,7 +53,7 @@ While upgrading by downloading and running the installer may work, it is probabl
 
 ```
 docker stop openaudible
-docker rm openaudible
+docker rm openaudible    # Not needed if the -rm flag was used
 ```
 Then re-run the command(s) above to start it anew. Your settings should still be saved in the docker volume that should be mapped to a home directory.
 
@@ -66,7 +67,6 @@ Then re-run the command(s) above to start it anew. Your settings should still be
 * Add a user/password for accessing the VM 
 * Perhaps experiment with Ubuntu Kiosk Mode, to disable terminal, su, etc? OpenAudible and system file browser.
 * lock down "su" root ability (change root password?)  
-* Mapping uids from your local file system to the docker file system hasn't been addressed (so files downloaded from the container may have id's that don't match your own.)
 
 ## Notes
 * This is experimental and unsupported. We hope some people find it useful. It is a neat way to run a desktop app in a container.  

@@ -1,8 +1,9 @@
 #!/bin/bash
 echo "start install `date` ">>/tmp/oa.txt
     cd /config
+    echo "Hello. Thanks for trying OpenAudible for Docker!" 
     echo "First time setup... Downloading latest OpenAudible...."  
-    wget -q https://openaudible.org/latest/OpenAudible_x86_64.sh -O openaudible_installer.sh 
+    wget -q --show-progress https://openaudible.org/latest/OpenAudible_x86_64.sh -O openaudible_installer.sh 
     echo "Running OpenAudible installer"  
     sudo sh ./openaudible_installer.sh -q -overwrite -dir /usr/local/OpenAudible 
     rm openaudible_installer.sh 
