@@ -2,6 +2,10 @@
 /usr/bin/pulseaudio --start
 
 
+# Need to have a UTF-8 friendly LANG set.
+
+export LANG=en_US.UTF-8
+
 FILE=/usr/local/bin/OpenAudible
 if [ -f "$FILE" ]; then
     echo "$FILE exists."
@@ -15,10 +19,7 @@ fi
 
 # create desktop shortcut 
 mkdir -p /config/Desktop
-# cp  /usr/local/OpenAudible/OpenAudible.desktop ~/Desktop/OpenAudible.desktop
 
 # This blocks until user closes session
-
 /usr/bin/startxfce4 > /dev/null 2>&1
-
 

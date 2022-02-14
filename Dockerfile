@@ -5,7 +5,7 @@
 FROM ghcr.io/linuxserver/webtop:ubuntu-xfce
 
 EXPOSE 3000
-ENV DEBIAN_FRONTEND=noninteractive
+# ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
