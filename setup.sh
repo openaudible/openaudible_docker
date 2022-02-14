@@ -7,8 +7,8 @@ echo "Hello. Thanks for trying OpenAudible for Docker!"
 echo "First time setup... Downloading latest OpenAudible...."  
 wget -q --show-progress https://openaudible.org/latest/OpenAudible_x86_64.sh -O openaudible_installer.sh 
 
-echo "Running OpenAudible installer"  
-sh ./openaudible_installer.sh -q -overwrite -dir /usr/local/OpenAudible 
+echo "Running OpenAudible installer" # sudo is used to install to /usr/local 
+sudo sh ./openaudible_installer.sh -q -overwrite -dir /usr/local/OpenAudible 
 
 
 err=$?
