@@ -5,6 +5,9 @@
 # Need to have a UTF-8 friendly LANG set.
 
 export LANG=en_US.UTF-8
+export oa_external=false
+export oa_packaging=docker
+
 
 FILE=/usr/local/bin/OpenAudible
 if [ -f "$FILE" ]; then
