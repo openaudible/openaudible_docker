@@ -61,7 +61,8 @@ Then re-run the command(s) above to start it anew. Your settings should still be
 * Another user logging on to the web page disconnects anyone else already connected
 * No password protection is enabled by default. 
 * https not supported, but it will work using a reverse proxy like traefik or nginx.  
-* But it does allow a user to try the software in a containerized, accessible-from-anywhere way.
+
+The Docker version of OpenAudible allowa user to try the software in a containerized, accessible-from-anywhere way.
 
 ## TODO items
 * Add a user/password for accessing the VM 
