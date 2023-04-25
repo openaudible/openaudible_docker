@@ -15,9 +15,10 @@ in a container running Ubuntu that is via web browser. It uses webtop by linuxse
 
 This allows you to run OpenAudible from a container, on the cloud, or from any Docker capable system (NAS system?).
 
-No passwords are needed to access the web page (so use care!). For personal use. Only one user can
+No passwords are needed to access the web page. For personal use. Only one user can
 view web sessions at one time-so this can't be used to share the application with multiple viewers at the same time.
 
+Important: DO NOT expose to WAN using port forwarding. Do not use as reverse proxy unless you ensure a user/password is required.  
 
 ## Quick Start
 
@@ -67,10 +68,11 @@ The Docker version of OpenAudible allowa user to try the software in a container
 ## TODO items
 * Add a user/password for accessing the VM 
 * Perhaps experiment with Ubuntu Kiosk Mode, to disable terminal, su, etc? OpenAudible and system file browser.
-* lock down "su" root ability (change root password?)  
+* lock down "su" root ability (change root password?)
 
 ## Notes
-* This is experimental and unsupported. We hope some people find it useful. It is a neat way to run a desktop app in a container.  
+* This is experimental and unsupported. We hope some people find it useful. It is a neat way to run a desktop app in a container.
+* IMPORTANT: DO NOT EXPOSE PORT 3000 to the WAN using port forwarding or reverse proxy as there is no security on the linux webtop!
 * If you find any issues, please report them on [github.com/openaudible/openaudible_docker/issues](https://github.com/openaudible/openaudible_docker/issues).
 * Before deleting the container and volume, if you logged into Audible, you should Log out using the Control Menu, which will delete your virtual device.
 * Would appreciate feedback or pull requests. 
