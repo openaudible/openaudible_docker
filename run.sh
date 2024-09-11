@@ -16,7 +16,7 @@ PUID=`id -u`
 PGID=`id -g`
 
 
-OA_DIR=$HOME/OpenAudible
+OA_DIR=$HOME/OpenAudibleDocker
 echo "Saving book data to $OA_DIR"
 
 
