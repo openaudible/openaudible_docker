@@ -22,18 +22,17 @@ echo "Saving book data to $OA_DIR"
 
 docker build -t $NAME .
 echo "Starting $NAME docker container"
-docker run -d -it -v $OA_DIR:/config/OpenAudible -p 3000:3000 -e PUID=$PUID -e PGID=$PGID  --name $NAME $NAME
+# The security-opt argument appears required. 
+docker run -d -it -v $OA_DIR:/config/OpenAudible -p 3000:3000 -e PUID=$PUID -e PGID=$PGID --security-opt seccomp=unconfined  --name $NAME $NAME
 
 
-# or run without mapping the volume.... 
-# docker run -d -it -p 3000:3000 --name $NAME $NAME
-
-echo "OpenAudible container started... open a web browser to http://localhost:3000 "
+echo "OpenAudible container started... open a web browser to http://localhost:3000 (it may take a minute to start) "
 echo "Data file will be saved to $OA_DIR once the application has started for the first time"
 
 # If you want, uncomment this to show the logs as things start up.
 # You can cancel out (CTRL-C) and the container will continue to run
+
+echo "Run docker logs -f $NAME to follow the logs"
+
 # docker logs -f $NAME
-
-
 
