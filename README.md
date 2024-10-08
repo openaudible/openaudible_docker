@@ -35,11 +35,16 @@ You'll probably want to access the volume where OpenAudible saves books.
 ```
 git clone https://github.com/openaudible/openaudible_docker.git 
 cd openaudible_docker
-docker build -t openaudible .
-docker run -d --rm -it -p 3000:3000 --name openaudible openaudible
+./run.sh
 ```
 
 The [run.sh](run.sh) file builds and runs the docker image. You may want to modify it to expose the OPENAUDIBLE volume. 
+Note: The latest version requires the docker run to include --security-opt seccomp=unconfined in the arguments. Without that, you would need to start OpenAudible manually, which can be done via:
+```
+./bash.sh
+su abc
+OpenAudible
+```
 
 If successful, the application will be up and running on port 3000 and
 accessible via http://localhost:3000 in a browser.
