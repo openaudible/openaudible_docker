@@ -24,7 +24,7 @@ You may want to map the volume /root/openaudible to access downloaded and conver
 ## Quick Start
 
 ```
-docker run -d --rm -it -p 3000:3000 --name openaudible openaudible/openaudible:latest
+docker run -d --rm -it -p 3000:3000 --security-opt seccomp=unconfined --name openaudible openaudible/openaudible:latest
 ```
 
 Then open your web browser to http://localhost:3000
