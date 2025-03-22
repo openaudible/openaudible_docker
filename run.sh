@@ -1,6 +1,10 @@
 #!/bin/bash
 NAME=openaudible
 
+# Password is option. Default user is "abc" 
+PASSWORD=
+
+
 # Build docker image
 
 # Stop and remove any older instances
@@ -23,7 +27,7 @@ echo "Saving book data to $OA_DIR"
 docker build -t $NAME .
 echo "Starting $NAME docker container"
 # The security-opt argument appears required. 
-docker run -d -it -v $OA_DIR:/config/OpenAudible -p 3000:3000 -e PUID=$PUID -e PGID=$PGID --security-opt seccomp=unconfined  --name $NAME $NAME
+docker run -d -it -v $OA_DIR:/config/OpenAudible -p 3000:3000 -e PUID=$PUID -e PGID=$PGID --security-opt seccomp=unconfined -e PASSWORD=$PASSWORD --name $NAME $NAME
 
 
 echo "OpenAudible container started... open a web browser to http://localhost:3000 (it may take a minute to start) "
