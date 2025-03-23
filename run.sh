@@ -1,7 +1,7 @@
 #!/bin/bash
 NAME=openaudible
 
-# Password is option. Default user is "abc" 
+# Password is optional. Default user is "abc" 
 PASSWORD=
 
 
@@ -26,9 +26,8 @@ echo "Saving book data to $OA_DIR"
 
 docker build -t $NAME .
 echo "Starting $NAME docker container"
-# The security-opt argument appears required. 
+# The security-opt argument appears required. Without it, we get Openbox Error launching startup command: 
 docker run -d -it -v $OA_DIR:/config/OpenAudible -p 3000:3000 -e PUID=$PUID -e PGID=$PGID --security-opt seccomp=unconfined -e PASSWORD=$PASSWORD --name $NAME $NAME
-
 
 echo "OpenAudible container started... open a web browser to http://localhost:3000 (it may take a minute to start) "
 echo "Data file will be saved to $OA_DIR once the application has started for the first time"

@@ -6,16 +6,18 @@ This is an experimental alternative to the supported and recommended desktop bin
 
 This project is hosted on [github](https://github.com/openaudible/openaudible_docker) and [dockerhub](https://hub.docker.com/r/openaudible/openaudible)
 
-This project is based on the excellent [linuxserver.io/webtop](https://docs.linuxserver.io/images/docker-webtop) remote desktop container.
+This project is based on the excellent [https://www.kasmweb.com/kasmvnc](https://www.kasmweb.com/kasmvnc) remote desktop container.
 
 ## Description
 
 OpenAudible runs on Linux, Mac, and Windows. This Docker container runs the latest linux version
-in a container running Ubuntu that is via web browser. It uses webtop by linuxserver.io. 
+in a container running Ubuntu that is via web browser. 
 
 This allows you to run OpenAudible from a container, on the cloud, or from any Docker capable system (NAS system?).
 
-No passwords are needed to access the web page (so use care!). For personal use. Only one user can
+No passwords are needed to access the web page, but a password can be added by modifying the "run.sh" file. 
+
+For personal use. Only one user can
 view web sessions at one time-so this can't be used to share the application with multiple viewers at the same time.
 
 
@@ -58,8 +60,6 @@ The -rm flag removes the container when it quits. Any downloaded or converted bo
 * But it does allow a user to try the software in a containerized, accessible-from-anywhere way.
 
 ## TODO items
-* Perhaps experiment with Ubuntu Kiosk Mode, to disable terminal, su, etc?
-* lock down "su" root ability (change root password?)  
 * Document how to access the "config" volume so you can access any converted books from the host machine.
 
 ## Notes
@@ -70,6 +70,5 @@ The -rm flag removes the container when it quits. Any downloaded or converted bo
 * Docker is great for testing something, but we still recommend the desktop app for most users.
 
 ## License
-This repository is licensed under the GNU GPL 3.0 because that is what [docker-webtop](https://github.com/linuxserver/docker-webtop) uses.
-
 The OpenAudible desktop application is free to try shareware.
+
