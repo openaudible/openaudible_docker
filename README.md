@@ -52,6 +52,24 @@ If successful, the application will be up and running on port 3000 and
 accessible via http://localhost:3000 in a browser.
 
 The -rm flag removes the container when it quits. Any downloaded or converted books will be in the docker Volume.
+## Upgrade the Application
+To upgrade, you'll need to stop and delete (rm) the container, then restart using the same command you used to start it.
+Then when you launch the web page http://localhost:3000 the latest version will be downloaded and installed.
+
+```
+docker stop openaudible 
+docker rm openaudible
+docker run -d --rm -it -p 3000:3000 --security-opt seccomp=unconfined --name openaudible openaudible/openaudible:latest
+```
+
+Alternately, you can download and run the OpenAudible installer and not update the web linux environment:
+```
+curl -OL https://openaudible.org/latest/OpenAudible_x86_64.sh
+chmod +x OpenAudible_x86_64.sh
+./OpenAudible_x86_64.sh
+# If successful, delete installer file:
+rm ./OpenAudible_x86_64.sh
+```
 
 
 ## Known limitations:
