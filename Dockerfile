@@ -17,10 +17,12 @@ ENV KASM_AUDIO_ENABLED=1
 ENV KASM_AUDIO_QUALITY=medium
 ENV START_PULSEAUDIO=1
 ENV OA_PACKAGING=docker
-ENV OA_BETA=false
+# if OA_BETA is true, loads beta or latest release
+ENV OA_BETA=true
 ENV XDG_CURRENT_DESKTOP=XFCE
 ENV APP_DIR=/app/OpenAudible
-
+# Disable quit menu
+ENV OA_KIOSK=true
 
 # Install additional packages required for OpenAudible
 RUN apt-get update && apt-get install -y \
