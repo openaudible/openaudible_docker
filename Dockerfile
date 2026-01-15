@@ -1,6 +1,11 @@
 FROM ghcr.io/linuxserver/baseimage-kasmvnc:debianbookworm
 # Dockerfile to run OpenAudible in a kasmvnc web container using Docker.
 
+# Validate supported architectures (x86_64 or aarch64)
+RUN ARCH="$(uname -m)" && \
+    ([ "$ARCH" = "x86_64" ] || [ "$ARCH" = "aarch64" ]) || \
+    (echo "ERROR: Unsupported architecture $ARCH. OpenAudible requires x86_64 or aarch64" && exit 1)
+
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG=C.UTF-8
@@ -12,19 +17,21 @@ ENV KASM_AUDIO_ENABLED=1
 ENV KASM_AUDIO_QUALITY=medium
 ENV START_PULSEAUDIO=1
 ENV OA_PACKAGING=docker
-ENV BROWSER=/usr/bin/firefox-esr
+ENV OA_BETA=false
 ENV XDG_CURRENT_DESKTOP=XFCE
+ENV APP_DIR=/app/OpenAudible
 
 
 # Install additional packages required for OpenAudible
 RUN apt-get update && apt-get install -y \
     libgtk-3-bin \
     ca-certificates \
+    ca-certificates-java \
     wget \
     libwebkit2gtk-4.1-0 \
     vim \
     xdg-utils \
-    firefox-esr \
+    xterm \
     thunar \
     python3-xdg \
     pulseaudio \
@@ -32,17 +39,21 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Set Firefox as the default browser
-RUN update-alternatives --set x-www-browser /usr/bin/firefox-esr && \
-    update-alternatives --set gnome-www-browser /usr/bin/firefox-esr
+# Update CA certificates and ensure Java can access them
+RUN update-ca-certificates
 
 COPY assets/*.sh /config
 RUN chmod +x /config/*.sh
 COPY assets/index.html /kclient/public/index.html
 
+# Configure Openbox to not auto-maximize windows
+COPY assets/configure-openbox /etc/cont-init.d/98-configure-openbox
+RUN chmod +x /etc/cont-init.d/98-configure-openbox
+
 # Set up to autostart our script instead of OpenAudible directly
 RUN echo "/config/start_openaudible.sh" > /defaults/autostart
-RUN chown -R abc /config && chgrp -R abc /config
+RUN chown -R abc:abc /config && chmod -R 755 /config
+RUN mkdir -p $APP_DIR && chown -R abc:abc $APP_DIR && chmod 755 $APP_DIR
 
 ENTRYPOINT ["/config/entrypoint.sh"]
 CMD ["/init"]

@@ -1,0 +1,33 @@
+#!/usr/bin/with-contenv bash
+# Configure Openbox to not auto-maximize windows
+
+echo "[configure-openbox] Configuring Openbox window behavior..."
+
+# Create user Openbox config directory
+mkdir -p /config/.config/openbox
+
+# Check if rc.xml exists, if not copy from system default
+if [ ! -f /config/.config/openbox/rc.xml ]; then
+    if [ -f /etc/xdg/openbox/rc.xml ]; then
+        cp /etc/xdg/openbox/rc.xml /config/.config/openbox/rc.xml
+    fi
+fi
+
+# Add or modify applications section to disable auto-maximize
+if [ -f /config/.config/openbox/rc.xml ]; then
+    # Check if applications section exists
+    if ! grep -q "<applications>" /config/.config/openbox/rc.xml; then
+        # Add applications section before closing config tag
+        sed -i 's|</openbox_config>|  <applications>\n    <application class="*">\n      <maximized>no</maximized>\n    </application>\n  </applications>\n</openbox_config>|' /config/.config/openbox/rc.xml
+    else
+        # Check if maximized rule already exists
+        if ! grep -q "<maximized>no</maximized>" /config/.config/openbox/rc.xml; then
+            # Add maximized rule to applications section
+            sed -i 's|<applications>|<applications>\n    <application class="*">\n      <maximized>no</maximized>\n    </application>|' /config/.config/openbox/rc.xml
+        fi
+    fi
+    chown -R abc:abc /config/.config
+    echo "[configure-openbox] Openbox configured to not auto-maximize windows"
+else
+    echo "[configure-openbox] Warning: rc.xml not found, skipping configuration"
+fi

@@ -1,8 +1,11 @@
 #!/bin/bash
 NAME=openaudible
 
-# Password is optional. Default user is "abc" 
+# Password is optional. Default user is "abc"
 PASSWORD=
+
+# Set to true to download beta versions of OpenAudible
+# OA_BETA=true
 
 
 # Build docker image
@@ -26,8 +29,19 @@ echo "Saving book data to $OA_DIR"
 
 docker build -t $NAME .
 echo "Starting $NAME docker container"
-# The security-opt argument appears required. Without it, we get Openbox Error launching startup command: 
-docker run -d -it -v $OA_DIR:/config/OpenAudible -p 3000:3000 -e PUID=$PUID -e PGID=$PGID --security-opt seccomp=unconfined -e PASSWORD=$PASSWORD --name $NAME $NAME
+# The security-opt argument appears required. Without it, we get Openbox Error launching startup command:
+
+# Build docker run command with optional OA_BETA
+DOCKER_RUN_CMD="docker run -d -it -v $OA_DIR:/config/OpenAudible -p 3000:3000 -e PUID=$PUID -e PGID=$PGID --security-opt seccomp=unconfined -e PASSWORD=$PASSWORD"
+
+# Add OA_BETA if set
+if [ ! -z "$OA_BETA" ]; then
+    DOCKER_RUN_CMD="$DOCKER_RUN_CMD -e OA_BETA=$OA_BETA"
+fi
+
+DOCKER_RUN_CMD="$DOCKER_RUN_CMD --name $NAME $NAME"
+
+$DOCKER_RUN_CMD
 
 echo "OpenAudible container started... open a web browser to http://localhost:3000 (it may take a minute to start) "
 echo "Data file will be saved to $OA_DIR once the application has started for the first time"
@@ -37,5 +51,5 @@ echo "Data file will be saved to $OA_DIR once the application has started for th
 
 echo "Run docker logs -f $NAME to follow the logs"
 
-# docker logs -f $NAME
+docker logs -f $NAME
 
