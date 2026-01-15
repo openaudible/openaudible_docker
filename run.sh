@@ -19,10 +19,12 @@ set -e
 PUID=`id -u`
 PGID=`id -g`
 
-
+# Data Dir for OpenAudible - Contains meta data, books directory, aax, art etc.
 OA_DIR=$HOME/OpenAudibleDocker
 echo "Saving book data to $OA_DIR"
 
+# Create the directory with proper permissions before docker creates it
+mkdir -p "$OA_DIR"
 
 docker build -t $NAME .
 echo "Starting $NAME docker container"
@@ -37,5 +39,5 @@ echo "Data file will be saved to $OA_DIR once the application has started for th
 
 echo "Run docker logs -f $NAME to follow the logs"
 
-# docker logs -f $NAME
+docker logs -f $NAME
 

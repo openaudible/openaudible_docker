@@ -14,7 +14,8 @@ ENV START_PULSEAUDIO=1
 ENV OA_PACKAGING=docker
 ENV BROWSER=/usr/bin/firefox-esr
 ENV XDG_CURRENT_DESKTOP=XFCE
-
+ENV oa_internal_browser=true
+ENV OA_DOCKER=true
 
 # Install additional packages required for OpenAudible
 RUN apt-get update && apt-get install -y \
@@ -24,24 +25,35 @@ RUN apt-get update && apt-get install -y \
     libwebkit2gtk-4.1-0 \
     vim \
     xdg-utils \
-    firefox-esr \
     thunar \
     python3-xdg \
     pulseaudio \
     alsa-utils \
+    xterm \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Set Firefox as the default browser
-RUN update-alternatives --set x-www-browser /usr/bin/firefox-esr && \
-    update-alternatives --set gnome-www-browser /usr/bin/firefox-esr
 
-COPY assets/*.sh /config
+COPY assets/*.sh /config/
 RUN chmod +x /config/*.sh
 COPY assets/index.html /kclient/public/index.html
 
-# Set up to autostart our script instead of OpenAudible directly
-RUN echo "/config/start_openaudible.sh" > /defaults/autostart
+# Copy OpenAudible desktop launcher
+COPY assets/OpenAudible.desktop /defaults/OpenAudible.desktop
+RUN chmod +x /defaults/OpenAudible.desktop
+
+# Copy Openbox window manager configuration for better window sizing
+RUN mkdir -p /defaults/.config/openbox
+COPY assets/rc.xml /defaults/.config/openbox/rc.xml
+
+# Step 2: Installer will be downloaded at runtime, just prep the data directory
+RUN mkdir -p /config/OpenAudible && \
+    chown -R abc:abc /config/OpenAudible
+
+# Copy autostart script
+COPY assets/autostart /defaults/autostart
+RUN chmod +x /defaults/autostart
+
 RUN chown -R abc /config && chgrp -R abc /config
 
 ENTRYPOINT ["/config/entrypoint.sh"]

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=OpenAudible
+Comment=Audiobook Manager
+Exec=/config/OpenAudibleApp/OpenAudible
+Icon=/config/OpenAudibleApp/share/icons/hicolor/128x128/apps/OpenAudible.png
+Terminal=false
+Categories=AudioVideo;Audio;
+StartupNotify=true

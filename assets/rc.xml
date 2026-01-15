@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openbox_config xmlns="http://openbox.org/3.4/rc">
+  <applications>
+    <!-- OpenAudible application window rules -->
+    <application name="OpenAudible" class="*">
+      <maximized>no</maximized>
+      <position force="yes">
+        <x>center</x>
+        <y>center</y>
+      </position>
+      <!-- Set to 75% of 1024x768 default screen size -->
+      <size>
+        <width>768</width>
+        <height>576</height>
+      </size>
+      <decor>yes</decor>
+    </application>
+
+    <!-- xterm windows (installer, logs) -->
+    <application name="xterm" class="XTerm">
+      <maximized>no</maximized>
+      <position force="yes">
+        <x>center</x>
+        <y>center</y>
+      </position>
+      <size>
+        <width>700</width>
+        <height>500</height>
+      </size>
+      <decor>yes</decor>
+    </application>
+  </applications>
+
+  <!-- Window placement policy -->
+  <placement>
+    <policy>Smart</policy>
+  </placement>
+</openbox_config>
