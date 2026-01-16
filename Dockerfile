@@ -22,7 +22,7 @@ ENV OA_BETA=true
 ENV XDG_CURRENT_DESKTOP=XFCE
 ENV APP_DIR=/app/OpenAudible
 # Disable quit menu
-ENV OA_KIOSK_MODE=true
+ENV OA_KIOSK=true
 ENV oa_internal_browser=true
 
 # Install additional packages required for OpenAudible
