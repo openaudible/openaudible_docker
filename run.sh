@@ -7,6 +7,12 @@ PASSWORD=
 # Set to true to download beta versions of OpenAudible
 # OA_BETA=true
 
+# Configure where your books, web page, and artwork files will be saved
+# Default: $HOME/OpenAudibleDocker
+# For Synology NAS, you might use: /volume1/docker/openaudible
+# For other systems, use any path you prefer: /path/to/your/data
+OA_DIR=${OA_DIR:-$HOME/OpenAudibleDocker}
+
 
 # Build docker image
 
@@ -14,18 +20,31 @@ PASSWORD=
 docker stop $NAME
 docker rm $NAME
 
-# Where your books, web page, and artwork files will be saved
-# for this sample script, we set OA_DIR to your home directory/OpenAudible ... You can modify this by editing the OA_DIR variable.
 set -e
 
 # Use the following User IDs and Group IDs for the container
 PUID=`id -u`
 PGID=`id -g`
 
-
-OA_DIR=$HOME/OpenAudibleDocker
 echo "Saving book data to $OA_DIR"
 
+# Create the data directory if it doesn't exist and set correct permissions
+# This prevents Docker from creating it as root
+if [ ! -d "$OA_DIR" ]; then
+    echo "Creating data directory: $OA_DIR"
+    mkdir -p "$OA_DIR"
+    chown $PUID:$PGID "$OA_DIR"
+    echo "Set ownership to $PUID:$PGID"
+else
+    echo "Data directory already exists"
+    # Ensure correct ownership even if directory exists
+    current_owner=$(stat -c '%u:%g' "$OA_DIR" 2>/dev/null || stat -f '%u:%g' "$OA_DIR" 2>/dev/null)
+    if [ "$current_owner" != "$PUID:$PGID" ]; then
+        echo "Warning: Directory owner is $current_owner but should be $PUID:$PGID"
+        echo "Attempting to fix ownership..."
+        chown $PUID:$PGID "$OA_DIR" || echo "Failed to change ownership. You may need to run: sudo chown $PUID:$PGID $OA_DIR"
+    fi
+fi
 
 docker build -t $NAME .
 echo "Starting $NAME docker container"

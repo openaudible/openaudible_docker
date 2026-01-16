@@ -55,6 +55,64 @@ docker run -d \
 
 Replace `/your/nas/path` with your actual NAS storage path.
 
+## Volume Configuration and Permissions
+
+The container stores all OpenAudible data (books, metadata, settings) in `/config/OpenAudible` inside the container. You **must** map this to a volume on your host for data persistence.
+
+### Important: File Permissions
+
+The container runs as a non-root user (named `abc`) with configurable UID/GID. To avoid permission issues:
+
+1. **Set PUID and PGID** to match your host user:
+   ```bash
+   docker run -d \
+     -e PUID=$(id -u) \
+     -e PGID=$(id -g) \
+     -v /path/to/data:/config/OpenAudible \
+     ...
+   ```
+
+2. **Pre-create the data directory** with correct ownership:
+   ```bash
+   mkdir -p /path/to/data
+   chown $(id -u):$(id -g) /path/to/data
+   ```
+
+3. **If you get permission errors**, check directory ownership:
+   ```bash
+   ls -ld /path/to/data
+   # Should show your user:group
+
+   # Fix if needed:
+   sudo chown -R $(id -u):$(id -g) /path/to/data
+   ```
+
+### Configuring the Data Directory with run.sh
+
+The `run.sh` script now automatically:
+- Creates the data directory if it doesn't exist
+- Sets correct ownership based on your current user
+- Validates permissions before starting the container
+
+To customize the location, edit `OA_DIR` in `run.sh` or set it as an environment variable:
+
+```bash
+# Option 1: Edit run.sh directly (line ~14)
+OA_DIR=${OA_DIR:-/your/custom/path}
+
+# Option 2: Set environment variable before running
+export OA_DIR=/volume1/docker/openaudible
+./run.sh
+```
+
+### NAS-Specific Considerations
+
+On Synology and other NAS systems:
+- Use PUID/PGID matching your NAS user (check with `id` command via SSH)
+- Synology typically uses PUID=1026, PGID=100 for the first user
+- Ensure the volume path is accessible to that user
+- See [SYNOLOGY.md](SYNOLOGY.md) for detailed NAS deployment instructions
+
 ## Building and running from source
 ```
 git clone https://github.com/openaudible/openaudible_docker.git 
@@ -74,23 +132,30 @@ If successful, the application will be up and running on port 3000 and
 accessible via http://localhost:3000 in a browser.
 
 The -rm flag removes the container when it quits. Any downloaded or converted books will be in the docker Volume.
-## Upgrade the Application
-To upgrade, you'll need to stop and delete (rm) the container, then restart using the same command you used to start it.
-Then when you launch the web page http://localhost:3000 the latest version will be downloaded and installed.
+## Upgrading OpenAudible
 
-```
-docker stop openaudible 
+To upgrade OpenAudible to the latest version, stop and remove the container, then restart it. The latest version will be automatically downloaded and installed on startup.
+
+**Your books, settings, and data are safe** - they're stored in the volume mount and will persist across container restarts.
+
+```bash
+docker stop openaudible
 docker rm openaudible
 docker run -d --rm -it -p 3000:3000 --security-opt seccomp=unconfined --name openaudible openaudible/openaudible:latest
 ```
 
-Alternately, you can download and run the OpenAudible installer and not update the web linux environment:
-```
-curl -OL https://openaudible.org/latest/OpenAudible_x86_64.sh
-chmod +x OpenAudible_x86_64.sh
-./OpenAudible_x86_64.sh
-# If successful, delete installer file:
-rm ./OpenAudible_x86_64.sh
+Replace the `docker run` command with your actual command if you're using custom volumes or settings.
+
+### Beta vs Production Versions
+
+By default, the container downloads the latest **beta** version of OpenAudible. To use the production (stable) version instead:
+
+```bash
+docker run -d --rm -it -p 3000:3000 \
+  -e OA_BETA=false \
+  --security-opt seccomp=unconfined \
+  --name openaudible \
+  openaudible/openaudible:latest
 ```
 
 
