@@ -45,8 +45,8 @@ RUN apt-get update && apt-get install -y \
 # Update CA certificates and ensure Java can access them
 RUN update-ca-certificates
 
-COPY assets/*.sh /config
-RUN chmod +x /config/*.sh
+COPY assets/*.sh /app/
+RUN chown abc:abc /app/*.sh && chmod +x /app/*.sh
 COPY assets/index.html /kclient/public/index.html
 
 # Configure Openbox to not auto-maximize windows
@@ -54,11 +54,11 @@ COPY assets/configure-openbox /etc/cont-init.d/98-configure-openbox
 RUN chmod +x /etc/cont-init.d/98-configure-openbox
 
 # Set up to autostart our script instead of OpenAudible directly
-RUN echo "/config/start_openaudible.sh" > /defaults/autostart
+RUN echo "/app/start_openaudible.sh" > /defaults/autostart
 RUN chown -R abc:abc /config && chmod -R 755 /config
 RUN mkdir -p $APP_DIR && chown -R abc:abc $APP_DIR && chmod 755 $APP_DIR
 
-ENTRYPOINT ["/config/entrypoint.sh"]
+ENTRYPOINT ["/app/entrypoint.sh"]
 CMD ["/init"]
 
 # Expose the web interface port

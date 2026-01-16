@@ -21,7 +21,7 @@ For personal use. Only one user can
 view web sessions at one time-so this can't be used to share the application with multiple viewers at the same time.
 
 
-You may want to map the volume /root/openaudible to access downloaded and converted audiobooks.
+The container stores data in `/config/OpenAudible` inside the container. Map this to a volume on your host system to access downloaded and converted audiobooks. See the NAS Deployment section below for platform-specific instructions.
 
 ## Quick Start
 
@@ -32,6 +32,28 @@ docker run -d --rm -it -p 3000:3000 --security-opt seccomp=unconfined --name ope
 Then open your web browser to http://localhost:3000
 
 You'll probably want to access the volume where OpenAudible saves books.
+
+## NAS Deployment
+
+For detailed Synology NAS deployment instructions, see [SYNOLOGY.md](SYNOLOGY.md).
+
+More NAS platforms coming soon (QNAP, Unraid, TrueNAS).
+
+### Quick NAS Example
+
+```bash
+docker run -d \
+  --name=openaudible \
+  -p 3000:3000 \
+  -v /your/nas/path:/config/OpenAudible \
+  -e PUID=1026 \
+  -e PGID=100 \
+  --security-opt seccomp=unconfined \
+  --restart unless-stopped \
+  openaudible/openaudible:latest
+```
+
+Replace `/your/nas/path` with your actual NAS storage path.
 
 ## Building and running from source
 ```
@@ -76,9 +98,6 @@ rm ./OpenAudible_x86_64.sh
 * Another user logging on to the web page disconnects anyone else already connected
 * No password protection is offered or https proxy-but can be added. 
 * But it does allow a user to try the software in a containerized, accessible-from-anywhere way.
-
-## TODO items
-* Document how to access the "config" volume so you can access any converted books from the host machine.
 
 ## Notes
 * This is experimental and unsupported. We hope some people find it useful. 
