@@ -1,3 +1,10 @@
 OpenAudible
 .idea
 
+# Docker compose overrides (local customizations)
+docker-compose.override.yml
+
+# Local data directories
+openaudible_data/
+data/
+

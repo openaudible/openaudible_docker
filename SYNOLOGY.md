@@ -6,10 +6,12 @@ Comprehensive guide for deploying OpenAudible Docker container on Synology DSM.
 
 ## Table of Contents
 - [Introduction](#introduction)
+- [Quick Start (Docker Compose)](#quick-start-docker-compose-recommended)
 - [Quick Start (GUI)](#quick-start-gui-method)
 - [Finding PUID/PGID](#finding-your-puidpgid)
 - [Command Line Deployment](#command-line-deployment)
 - [Accessing Your Data](#accessing-your-data)
+- [Sharing Audiobooks on Your Network](#sharing-audiobooks-on-your-network)
 - [Troubleshooting](#troubleshooting)
 - [Upgrading](#upgrading)
 - [Optional: Web Status Page](#optional-web-status-page)
@@ -35,7 +37,96 @@ OpenAudible is an audiobook manager that allows you to download and convert your
 - Port 3000 available
 - Storage space for your audiobooks
 
+## Quick Start (Docker Compose - Recommended)
+
+The easiest way to deploy OpenAudible on Synology is using the included `docker-compose.synology.yml` file. This method automatically handles all security settings and makes configuration straightforward.
+
+### Step 1: Download the Synology Compose File
+
+Download the [`docker-compose.synology.yml`](docker-compose.synology.yml) file from this repository, or SSH into your Synology and run:
+
+```bash
+# Create project directory
+mkdir -p /volume1/docker/projects/openaudible
+cd /volume1/docker/projects/openaudible
+
+# Download Synology-specific compose file
+wget -O docker-compose.yml https://raw.githubusercontent.com/openaudible/openaudible_docker/main/docker-compose.synology.yml
+
+# Or use the generic version
+# wget https://raw.githubusercontent.com/openaudible/openaudible_docker/main/docker-compose.yml
+```
+
+**Note:** We download it as `docker-compose.yml` (without .synology) so docker-compose commands work normally.
+
+### Step 2: Customize the Configuration
+
+Edit the `docker-compose.yml` file and customize these key settings:
+
+```yaml
+volumes:
+  # Change this path to where you want audiobooks stored
+  - /volume1/docker/openaudible:/config/OpenAudible
+
+environment:
+  # Change to your Synology user ID (run 'id -u' via SSH)
+  - PUID=1026
+  # Change to your group ID (run 'id -g' via SSH)
+  - PGID=100
+  # Optional: Set timezone
+  - TZ=America/New_York
+```
+
+**For easier network access**, use a dedicated shared folder:
+```yaml
+volumes:
+  # This makes audiobooks accessible at \\YOUR-NAS\Audiobooks
+  - /volume1/Audiobooks:/config/OpenAudible
+```
+
+### Step 3: Pre-create the Data Directory
+
+**IMPORTANT:** Create the directory with correct permissions before deploying:
+
+```bash
+# SSH into your Synology
+ssh admin@YOUR-NAS-IP
+
+# Create directory (adjust path to match your docker-compose.yml)
+sudo mkdir -p /volume1/docker/openaudible
+sudo chown 1026:100 /volume1/docker/openaudible  # Use your PUID:PGID
+sudo chmod 755 /volume1/docker/openaudible
+```
+
+### Step 4: Deploy via Container Manager
+
+1. Open **Container Manager** on your Synology
+2. Go to **Project** tab
+3. Click **Create**
+4. Choose **Upload docker-compose.yml**
+5. Select your edited `docker-compose.yml` (or `docker-compose.synology.yml`) file
+6. Project name: `openaudible`
+7. Click **Next** then **Done**
+
+### Step 5: Access OpenAudible
+
+Open your browser and go to: `http://YOUR-NAS-IP:3000`
+
+The first launch will download and install OpenAudible (takes 1-2 minutes).
+
+### Managing the Container
+
+In Container Manager > Project > openaudible:
+- **Stop**: Stops the container
+- **Start**: Starts the container
+- **Build**: Rebuilds (not needed for this project)
+- **Action > Down**: Completely removes the container (data is safe in volume)
+
+To upgrade OpenAudible, stop the project, then start it again. The latest version will be downloaded automatically.
+
 ## Quick Start (GUI Method)
+
+If you prefer not to use docker-compose, you can deploy manually via the Container Manager GUI:
 
 ### Step 1: Install Container Manager
 
@@ -254,6 +345,131 @@ Since all your audiobooks are in one folder, you can:
 - Use **Hyper Backup** to back up the `/docker/openaudible` folder
 - Use **Snapshot Replication** for version history
 - Sync to another NAS or cloud storage with **Cloud Sync**
+
+## Sharing Audiobooks on Your Network
+
+One of the key benefits of running OpenAudible on Synology is making your audiobook library accessible to all devices on your network. Here are the best approaches:
+
+### Option 1: Use a Dedicated Shared Folder (Recommended)
+
+This is the cleanest approach for easy network access:
+
+**Step 1: Create a Shared Folder**
+1. Open **Control Panel** > **Shared Folder**
+2. Click **Create** > **Create**
+3. Configure:
+   - **Name**: `Audiobooks`
+   - **Description**: `OpenAudible audiobook library`
+   - **Location**: Choose your volume (usually Volume 1)
+4. Click **Next** through the wizard
+5. Set permissions for your user account (Read/Write)
+6. Click **Apply**
+
+**Step 2: Configure OpenAudible to Use This Folder**
+
+In your `docker-compose.yml` or Container settings:
+```yaml
+volumes:
+  - /volume1/Audiobooks:/config/OpenAudible
+```
+
+Or for manual deployment:
+```bash
+-v /volume1/Audiobooks:/config/OpenAudible
+```
+
+**Step 3: Access from Any Device**
+
+- **Windows**: Open File Explorer and go to `\\YOUR-NAS-IP\Audiobooks` or `\\YOUR-NAS-NAME\Audiobooks`
+- **Mac**: In Finder, press Cmd+K and connect to `smb://YOUR-NAS-IP/Audiobooks`
+- **Linux**: Mount via `smb://YOUR-NAS-IP/Audiobooks`
+- **Mobile (DS file app)**: Browse to Audiobooks folder
+
+**Directory structure you'll see:**
+```
+Audiobooks/
+├── books/          # Original downloaded files
+├── m4b/            # Converted M4B files (single file per book)
+├── mp3/            # Converted MP3 files (chapters)
+├── aax/            # Original Audible AAX files
+├── art/            # Cover artwork
+└── books.json      # Library database
+```
+
+### Option 2: Share the Docker Folder
+
+If you're using `/volume1/docker/openaudible`, you can access it via:
+- **Windows**: `\\YOUR-NAS-IP\docker\openaudible`
+- **Mac**: `smb://YOUR-NAS-IP/docker/openaudible`
+
+**Note:** You may need to create the `docker` shared folder:
+1. Go to **Control Panel** > **Shared Folder**
+2. Create a shared folder named `docker` pointing to `/volume1/docker`
+3. Set appropriate permissions
+
+### Option 3: Access Specific Subdirectories
+
+If you only want to share the converted audiobooks (not the entire OpenAudible directory):
+
+**For M4B files only:**
+1. Create shared folder: `Audiobooks-M4B`
+2. In File Station, create a symbolic link from `/volume1/Audiobooks-M4B` to `/volume1/docker/openaudible/m4b`
+3. Or mount just that subdirectory:
+   ```yaml
+   volumes:
+     - /volume1/docker/openaudible:/config/OpenAudible
+     - /volume1/docker/openaudible/m4b:/volume1/Audiobooks-M4B:ro  # Read-only
+   ```
+
+### Option 4: Import Existing Audiobooks
+
+If you already have audiobooks in another location and want OpenAudible to access them:
+
+**In docker-compose.yml, add additional mount:**
+```yaml
+volumes:
+  - /volume1/docker/openaudible:/config/OpenAudible
+  - /volume1/Media/Audiobooks:/import/audiobooks:ro  # Read-only
+  - /volume1/Music/Audiobooks:/import/music:ro       # Another location
+```
+
+**Then in OpenAudible:**
+1. Use the file picker to browse to `/import/audiobooks` or `/import/music`
+2. Select books to import
+3. OpenAudible will copy them to its library
+
+**Advantages:**
+- Keep your existing audiobook organization
+- OpenAudible can access multiple source directories
+- Original files remain untouched (read-only mount)
+- Books are copied to OpenAudible's managed library
+
+### Best Practices for Network Sharing
+
+1. **Permissions**: Ensure your user has Read/Write access to the shared folder
+2. **Naming**: Use clear names like `Audiobooks` instead of `docker/openaudible`
+3. **Organization**: Let OpenAudible manage the folder structure (books/, m4b/, mp3/, etc.)
+4. **Media Players**: Point your audiobook apps (Plex, Audiobookshelf, etc.) to the shared folder
+5. **Backups**: Use Hyper Backup to back up the entire shared folder regularly
+
+### Recommended Setup for Most Users
+
+```yaml
+# docker-compose.yml
+volumes:
+  # Primary: Store all OpenAudible data in dedicated shared folder
+  - /volume1/Audiobooks:/config/OpenAudible
+
+  # Optional: Import from existing locations (read-only)
+  - /volume1/Media/ExistingAudiobooks:/import/existing:ro
+```
+
+**Result:**
+- Audiobooks accessible at: `\\YOUR-NAS\Audiobooks`
+- Easy to share with family members
+- Simple backup configuration
+- Can import from existing collections
+- Compatible with media server apps
 
 ## Troubleshooting
 

@@ -35,11 +35,25 @@ You'll probably want to access the volume where OpenAudible saves books.
 
 ## NAS Deployment
 
-For detailed Synology NAS deployment instructions, see [SYNOLOGY.md](SYNOLOGY.md).
+### Docker Compose (Any Platform)
 
-More NAS platforms coming soon (QNAP, Unraid, TrueNAS).
+The easiest deployment method is using docker-compose:
 
-### Quick NAS Example
+**Generic (works everywhere):**
+```bash
+wget https://raw.githubusercontent.com/openaudible/openaudible_docker/main/docker-compose.yml
+docker-compose up -d
+```
+
+**Synology-optimized:**
+```bash
+wget https://raw.githubusercontent.com/openaudible/openaudible_docker/main/docker-compose.synology.yml -O docker-compose.yml
+# Edit file, then deploy via Container Manager > Project > Create
+```
+
+For detailed Synology instructions, see [SYNOLOGY.md](SYNOLOGY.md).
+
+### Quick NAS Example (Command Line)
 
 ```bash
 docker run -d \
@@ -54,6 +68,10 @@ docker run -d \
 ```
 
 Replace `/your/nas/path` with your actual NAS storage path.
+
+**Synology tip:** Use `/volume1/Audiobooks` for easy network share access.
+
+More NAS platforms coming soon (QNAP, Unraid, TrueNAS).
 
 ## Volume Configuration and Permissions
 
