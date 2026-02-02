@@ -20,8 +20,6 @@ fi
 if [ "$OA_BETA" = "true" ]; then
     INSTALLER_URL="${INSTALLER_URL}?beta=true"
     echo "Beta mode enabled - downloading latest beta version"
-else
-    INSTALLER_URL="${INSTALLER_URL}?beta=false"
 fi
 
 FILE=/tmp/openaudible_installer.sh
