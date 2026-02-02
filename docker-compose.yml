@@ -1,0 +1,64 @@
+# OpenAudible Docker Compose Configuration
+# Works with any Docker environment (Synology, QNAP, Unraid, standard Linux, etc.)
+#
+# Quick Start:
+# 1. Copy this file and customize the volumes and environment sections
+# 2. Run: docker-compose up -d
+# 3. Access: http://localhost:3000
+#
+# For platform-specific guides, see:
+#   - Synology NAS: docker-compose.synology.yml and SYNOLOGY.md
+#   - QNAP, Unraid, TrueNAS: See README.md (coming soon)
+
+version: '3.8'
+
+services:
+  openaudible:
+    image: openaudible/openaudible:latest
+    container_name: openaudible
+
+    ports:
+      - "3000:3000"
+
+    volumes:
+      # REQUIRED: Map this to your desired data location
+      # Examples:
+      #   Linux:    /home/user/openaudible:/config/OpenAudible
+      #   Synology: /volume1/docker/openaudible:/config/OpenAudible
+      #   QNAP:     /share/Container/openaudible:/config/OpenAudible
+      #   Unraid:   /mnt/user/appdata/openaudible:/config/OpenAudible
+      - ./openaudible_data:/config/OpenAudible
+
+    environment:
+      # User and Group IDs for file permissions
+      # Linux: Run 'id -u' and 'id -g' to find your values
+      # Synology: Typically PUID=1026, PGID=100
+      # Docker Desktop: Not required
+      - PUID=1000
+      - PGID=1000
+
+      # Optional: Timezone
+      - TZ=UTC
+
+      # Optional: Password for web interface (leave empty for no password)
+      # - PASSWORD=
+
+      # Optional: Use beta versions (true) or stable releases (false)
+      - OA_BETA=true
+
+      # Pre-configured settings (generally don't need changes)
+      - KASM_AUDIO_ENABLED=1
+      - OA_KIOSK=true
+      - oa_internal_browser=true
+
+    # Required for auto-start functionality
+    security_opt:
+      - seccomp:unconfined
+
+    restart: unless-stopped
+
+# Notes:
+# - First launch takes 1-2 minutes while OpenAudible is downloaded and installed
+# - Data persists in the volume mount and survives container restarts
+# - To upgrade: docker-compose pull && docker-compose up -d
+# - Your audiobooks will be in: <volume-path>/books/, <volume-path>/m4b/, etc.

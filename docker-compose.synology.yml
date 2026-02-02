@@ -1,0 +1,199 @@
+# OpenAudible Docker Compose Configuration for Synology NAS
+#
+# This is a Synology-optimized version with detailed comments and recommendations.
+# For generic Docker environments, see docker-compose.yml instead.
+#
+# SYNOLOGY DEPLOYMENT STEPS:
+# 1. Edit the volumes and environment sections below to match your setup
+# 2. Pre-create directory: sudo mkdir -p /volume1/Audiobooks && sudo chown 1026:100 /volume1/Audiobooks
+# 3. Deploy via Container Manager > Project > Create > Upload this file
+# 4. Access: http://YOUR-NAS-IP:3000
+#
+# Full guide: See SYNOLOGY.md for detailed instructions
+#
+# To find your PUID/PGID on Synology:
+#   SSH into your NAS and run: id
+#   First admin user is typically: PUID=1026, PGID=100
+
+version: '3.8'
+
+services:
+  openaudible:
+    image: openaudible/openaudible:latest
+    container_name: openaudible
+
+    # Network and ports
+    ports:
+      - "3000:3000"    # Web interface port
+                       # Access via: http://YOUR-NAS-IP:3000
+                       # Change to "3001:3000" if port 3000 is already in use
+
+    # Volume mappings - CUSTOMIZE THESE PATHS FOR YOUR SYNOLOGY
+    volumes:
+      # PRIMARY VOLUME: All OpenAudible data (books, settings, conversions)
+      #
+      # RECOMMENDED: Use a dedicated shared folder for easy network access
+      # Step 1: Create shared folder "Audiobooks" in DSM Control Panel
+      # Step 2: Use path /volume1/Audiobooks as shown below
+      # Result: Audiobooks accessible at \\YOUR-NAS-IP\Audiobooks
+      #
+      # Common Synology paths:
+      #   - /volume1/Audiobooks (dedicated shared folder - RECOMMENDED)
+      #   - /volume1/docker/openaudible (in docker subfolder)
+      #   - /volume2/data/openaudible (on second volume)
+      #   - /volumeUSB1/openaudible (external USB drive)
+      - /volume1/Audiobooks:/config/OpenAudible
+
+      # OPTIONAL: Mount existing audiobook directories (read-only)
+      # Uncomment to import books from other locations on your NAS
+      # Then browse to /import/* in OpenAudible to import them
+      # - /volume1/Media/Audiobooks:/import/media:ro
+      # - /volume1/Music/Audiobooks:/import/music:ro
+
+    # Environment variables
+    environment:
+      # REQUIRED: User and Group IDs for file permissions
+      # IMPORTANT: Change these to match your Synology user!
+      # Find your IDs via SSH: id -u (for PUID) and id -g (for PGID)
+      #
+      # Common Synology values:
+      #   First admin user: PUID=1026, PGID=100
+      #   users group: PGID=100
+      #   administrators group: PGID=101
+      - PUID=1026
+      - PGID=100
+
+      # OPTIONAL: Password for web interface
+      # Set a password for VNC authentication
+      # Leave commented out (or empty) for no password
+      # - PASSWORD=your-secure-password
+
+      # OPTIONAL: Use beta versions of OpenAudible
+      # true = latest beta/development builds
+      # false = stable releases only
+      - OA_BETA=true
+
+      # OPTIONAL: Timezone
+      # Set to your local timezone for correct timestamps
+      # Examples: America/New_York, Europe/London, Asia/Tokyo, America/Los_Angeles
+      # List: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+      - TZ=America/New_York
+
+      # Pre-configured settings (generally don't need changes)
+      - KASM_AUDIO_ENABLED=1      # Enable audio support in browser
+      - OA_KIOSK=true              # Disable quit menu (recommended for Docker)
+      - oa_internal_browser=true   # Use internal browser for Audible login
+
+    # CRITICAL: Security options required for OpenAudible to auto-start
+    # This is required on Synology for the application to start automatically
+    # Without this, you'll need to manually start OpenAudible inside the container
+    security_opt:
+      - seccomp:unconfined
+
+    # Restart policy
+    # unless-stopped = Auto-restart on NAS reboot or container failure
+    restart: unless-stopped
+
+    # Optional: Resource limits
+    # Uncomment to limit CPU and memory usage
+    # Recommended for shared NAS environments
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: '2.0'        # Max 2 CPU cores
+    #       memory: 4G         # Max 4GB RAM
+    #     reservations:
+    #       cpus: '1.0'        # Guarantee 1 CPU core
+    #       memory: 2G         # Guarantee 2GB RAM
+
+# ACCESSING YOUR AUDIOBOOKS
+# ==========================
+# After OpenAudible runs, your files will be at:
+#   /volume1/Audiobooks/books/    - Downloaded audiobooks (original format)
+#   /volume1/Audiobooks/m4b/      - Converted M4B files (single file per book)
+#   /volume1/Audiobooks/mp3/      - Converted MP3 files (chapters)
+#   /volume1/Audiobooks/aax/      - Original Audible AAX files
+#   /volume1/Audiobooks/art/      - Cover artwork and images
+#
+# Access via File Station: Browse to Audiobooks folder
+# Access via Windows: \\YOUR-NAS-IP\Audiobooks
+# Access via Mac: smb://YOUR-NAS-IP/Audiobooks
+# Access via DS file app: Browse to Audiobooks folder
+
+# IMPORTANT: Pre-create Data Directory
+# =====================================
+# Before first deployment, create the directory via SSH:
+#   sudo mkdir -p /volume1/Audiobooks
+#   sudo chown 1026:100 /volume1/Audiobooks  # Use your PUID:PGID
+#   sudo chmod 755 /volume1/Audiobooks
+#
+# This prevents Docker from creating it as root, which would cause permission errors.
+
+# DEPLOYMENT OPTIONS
+# ==================
+#
+# Option 1: Container Manager GUI (Recommended)
+#   1. Container Manager > Project > Create
+#   2. Upload this file
+#   3. Project name: openaudible
+#   4. Click Next > Done
+#
+# Option 2: SSH Command Line
+#   1. Upload this file to: /volume1/docker/projects/openaudible/docker-compose.yml
+#   2. cd /volume1/docker/projects/openaudible
+#   3. docker-compose up -d
+#   4. docker-compose logs -f  (view logs)
+
+# UPGRADING
+# =========
+# To upgrade to the latest OpenAudible version:
+#   GUI: Stop the project, then Start it again
+#   SSH: docker-compose pull && docker-compose up -d
+# Your books and settings are preserved in the volume.
+
+# TROUBLESHOOTING
+# ===============
+# Port 3000 not accessible:
+#   - Check Synology firewall (Control Panel > Security > Firewall)
+#   - Verify container is running (Container Manager)
+#   - Check logs (Container Manager > Container > Log tab)
+#
+# Permission errors:
+#   - Verify PUID/PGID match your user (SSH: id)
+#   - Check directory ownership: ls -ld /volume1/Audiobooks
+#   - Fix: sudo chown -R 1026:100 /volume1/Audiobooks
+#
+# OpenAudible doesn't auto-start:
+#   - Ensure security_opt: seccomp:unconfined is present
+#   - Check container logs for errors
+#
+# Can't access network share:
+#   - Ensure shared folder exists (Control Panel > Shared Folder)
+#   - Check folder permissions for your user
+#
+# For more help, see: SYNOLOGY.md
+
+# EXAMPLE CONFIGURATIONS
+# ======================
+#
+# Example 1: Dedicated Audiobooks Shared Folder (Recommended)
+#   volumes:
+#     - /volume1/Audiobooks:/config/OpenAudible
+#   Result: \\YOUR-NAS\Audiobooks contains all audiobooks
+#
+# Example 2: In Docker Subfolder
+#   volumes:
+#     - /volume1/docker/openaudible:/config/OpenAudible
+#   Result: \\YOUR-NAS\docker\openaudible (need to create docker share)
+#
+# Example 3: With Import from Existing Location
+#   volumes:
+#     - /volume1/Audiobooks:/config/OpenAudible
+#     - /volume1/Media/ExistingBooks:/import/existing:ro
+#   Result: Can import from /import/existing in OpenAudible
+#
+# Example 4: Multiple Volume Configuration
+#   volumes:
+#     - /volume1/Audiobooks:/config/OpenAudible
+#     - /volume2/AudiobookArchive:/import/archive:ro
+#   Result: Main library on Volume 1, can import from Volume 2
