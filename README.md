@@ -166,11 +166,11 @@ Replace the `docker run` command with your actual command if you're using custom
 
 ### Beta vs Production Versions
 
-By default, the container downloads the latest **beta** version of OpenAudible. To use the production (stable) version instead:
+By default, the container downloads the latest stable version of OpenAudible. To use the a different version use a specific version number or the beta version instead:
 
 ```bash
 docker run -d --rm -it -p 3000:3000 \
-  -e OA_BETA=false \
+  -e OA_VERSION=latest \
   --security-opt seccomp=unconfined \
   --name openaudible \
   openaudible/openaudible:latest
