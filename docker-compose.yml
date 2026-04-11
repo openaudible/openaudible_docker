@@ -14,7 +14,7 @@ version: '3.8'
 
 services:
   openaudible:
-    image: openaudible/openaudible:latest
+    image: openaudibledocker:latest
     container_name: openaudible
 
     ports:
@@ -49,8 +49,8 @@ services:
       # Optional: Password for web interface (leave empty for no password)
       # - PASSWORD=
 
-      # Optional: Use beta versions (true) or stable releases (false)
-      - OA_BETA=false
+      # Optional: Open Audible version to install (default: latest) - can also specify specific versions like "3.0.0" or "beta"
+      - OA_VERSION=latest
 
       # Pre-configured settings (generally don't need changes)
       - KASM_AUDIO_ENABLED=1

@@ -73,8 +73,8 @@ services:
       # Optional: Password for web interface (leave empty for no password)
       # - PASSWORD=
 
-      # Optional: Use beta versions (true) or stable releases (false)
-      - OA_BETA=false
+      # Optional: Open Audible version to install (default: latest) - can also specify specific versions like "3.0.0" or "beta"
+      - OA_VERSION=latest
 
       # OPTIONAL: Timezone
       # Set to your local timezone for correct timestamps

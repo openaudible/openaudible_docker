@@ -5,27 +5,33 @@ set -e  # Exit on any error
 
 # Determine architecture and build installer URL
 ARCH="$(uname -m)"
-BASE_URL="https://openaudible.org/latest"
 
-if [ "$ARCH" = "x86_64" ]; then
-    INSTALLER_URL="${BASE_URL}/OpenAudible_x86_64.sh"
-elif [ "$ARCH" = "aarch64" ]; then
-    INSTALLER_URL="${BASE_URL}/OpenAudible_aarch64.sh"
-else
+if ![ "$ARCH" = "x86_64" ] || ![ "$ARCH" = "aarch64" ]; then
     echo "Error: Unsupported architecture $ARCH" >&2
     exit 1
 fi
 
-# Append beta parameter based on OA_BETA environment variable
-if [ "$OA_BETA" = "true" ]; then
-    INSTALLER_URL="${INSTALLER_URL}?beta=true"
-    echo "Beta mode enabled - downloading latest beta version"
+# Determine version to install
+if [ "$OA_VERSION" = "latest" ] || [ "$OA_VERSION" = "" ]; then
+    BASE_URL="https://openaudible.org/latest"
+    VERSION_NO=""
+    BETA_STR=""
+elif [ "$OA_VERSION" = "beta" ]; then
+    BASE_URL="https://openaudible.org/latest"
+    VERSION_NO=""
+    BETA_STR="?beta=true"
+elif 
+    BASE_URL="https://github.com/openaudible/openaudible/releases/download/v${OA_VERSION}"
+    VERSION_NO="_${OA_VERSION}"
+    BETA_STR=""
 fi
+
+INSTALLER_URL="${BASE_URL}/OpenAudible${VERSION_NO}_${ARCH}.sh${BETA_STR}"
 
 FILE=/tmp/openaudible_installer.sh
 echo "Welcome to OpenAudible for Docker!"
 echo "Downloading OpenAudible for $(uname -m)..."
-echo "Beta mode: ${OA_BETA:-false}"
+echo "Version mode: ${VERSION}"
 echo "URL: $INSTALLER_URL"
 
 if ! wget --show-progress -q "$INSTALLER_URL" -O "$FILE"; then
